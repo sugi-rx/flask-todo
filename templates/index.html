@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <title>ToDo App</title>
+</head>
+
+<body>
+  <main>
+    <div id="title" class="title w-50 mx-auto mt-2 align-items-center"><h1>ToDoリスト</h1></div>
+    <form action="/new" method="post">
+    <div class="input-group w-50 mx-auto mt-2 align-items-center">
+        <input type="text" class="form-control" name="list_create" id="list_create" placeholder="Input Task!">
+        <button class="btn btn-outline-secondary" type="submit">登録</button>
+    </div>
+    </form>
+      <table class="w-50 mx-auto align-items-center">
+        {% if lists %}
+        {% for list in lists %}
+        <tr>
+          <td>
+            <div class="card col-12 mt-2" id="{{list.id}}">
+                <div class="card-body">
+                  <h5 class="card-title text-wrap">{{ list.title }}</h5>
+                  {% if not list.category %}
+                  <h6 class="card-category mb-2">Card Category</h6>
+                  {% else %}
+                  <h6 class="card-category mb-2 text-wrap">{{ list.category }}</h6>
+                  {% endif %}
+                  <p class="card-text overflow-wrap" style="white-space:pre-wrap;">{{ list.description }}</p>
+                  <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#updateModal" data-id="{{list.id}}" data-title="{{list.title}}" data-category="{{list.category}}" data-description="{{list.description}}">タスク編集</button>
+                    <form class="form-inline" action="/update" method="post">
+                    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title text-break" id="updateModalLabel"></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {% if not list.category %}
+                                    <input id="list_category" name="list_category" type="text" class="modal-category form-control mb-2" aria-label="category-input">
+                                    {% else %}
+                                    <input id="list_category" name="list_category" type="text" class="modal-category form-control mb-2" aria-label="category-input">
+                                    {% endif %}
+                                    {%if not list.description %}
+                                    <textarea id="list_description" name="list_description" type="text" class="modal-description form-control mb-2" aria-label="description-input"></textarea>
+                                    {% else %}
+                                    <textarea id="list_description" name="list_description" type="text" class="modal-description form-control mb-2" aria-label="description-input"></textarea>
+                                    {% endif %}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                                    <button type="submit" class="list-update btn btn-primary" name="list_update" data-bs-dismiss="modal">保存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                  <form action="/delete" method="post">
+                  <button type="submit" class="btn btn-primary m-2" name="list_delete" value="{{list.id}}">タスク削除</button>
+                  </form>
+                  </div>
+                </div>
+              </div>
+          </td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+      </table>
+  </main>
+  <script>
+  var updateModal = document.getElementById('updateModal')
+  updateModal.addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget
+    var list_id = button.getAttribute('data-id')
+    var list_title = button.getAttribute('data-title')
+    var list_category = button.getAttribute('data-category')
+    var list_description = button.getAttribute('data-description')
+
+    var modalId = updateModal.querySelector('.list-update')
+    var modalTitle = updateModal.querySelector('.modal-title')
+    var modalCategory = updateModal.querySelector('.modal-category')
+    var modalDescription = updateModal.querySelector('.modal-description')
+
+    modalId.value = list_id
+    modalTitle.textContent = list_title
+    modalCategory.value = list_category
+    modalDescription.value = list_description
+})
+  </script>
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+
+</html>
